@@ -113,19 +113,18 @@
     showMessage("Zapisywanie...");
 
     try {
-      const response = await fetch(FUNCTION_URL, {
+        const response = await fetch(FUNCTION_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          token: token,
-          first_name: normalize(firstInput.value),
-          last_name: normalize(lastInput.value)
+            token: token,
+            first_name: normalize(firstInput.value),
+            last_name: normalize(lastInput.value)
         })
-      });
+        });
 
-      const text = await response.text();
+        const raw = await response.text();
+        showMessage(`HTTP ${response.status}: ${raw}`, response.ok);
 
       if (response.ok) {
         showMessage("Dziękujemy! Twoje potwierdzenie zostało zapisane ✅", true);
