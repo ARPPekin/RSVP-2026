@@ -1,10 +1,102 @@
-<!DOCTYPE html>
-<html>
-<title>HTML Test</title>
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RSVP</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; max-width: 520px; margin: 40px auto; padding: 0 16px; }
+    label { display:block; margin-top: 14px; font-weight: 600; }
+    input { width: 100%; padding: 12px; font-size: 16px; margin-top: 6px; box-sizing: border-box; }
+    button { width:100%; padding: 14px; font-size: 18px; margin-top: 18px; cursor: pointer; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .msg { margin-top: 16px; padding: 12px; border-radius: 8px; }
+    .ok { background:#e9f8ee; }
+    .err { background:#fdecec; }
+    .muted { color:#666; font-size: 13px; margin-top: 8px; }
+  </style>
+</head>
 <body>
+  <h1>Potwierdzenie obecności</h1>
 
-<h1>To jest nagłówek</h1>
-<p>To jest paragraf.</p>
+  <div id="content">
+    <p>Wpisz imię i nazwisko, aby aktywować przycisk potwierdzenia.</p>
 
+    <label for="first">Imię</label>
+    <input id="first" autocomplete="given-name" />
+
+    <label for="last">Nazwisko</label>
+    <input id="last" autocomplete="family-name" />
+
+    <button id="btn" disabled>Potwierdzam obecność</button>
+
+    <div id="out"></div>
+    <div class="muted">Uwaga: samo otwarcie linku niczego nie potwierdza.</div>
+  </div>
+
+<script>
+  const FUNCTION_URL = "https://PROJECT.functions.supabase.co/rsvp_confirm"; // <- PODMIEŃ
+  const token = new URLSearchParams(location.search).get("t");
+
+  const first = document.getElementById("first");
+  const last  = document.getElementById("last");
+  const btn   = document.getElementById("btn");
+  const out   = document.getElementById("out");
+
+  function norm(s){ return (s || "").trim().replace(/\s+/g, " "); }
+
+  function validate() {
+    const ok = token && token.length >= 20 && norm(first.value).length >= 2 && norm(last.value).length >= 2;
+    btn.disabled = !ok;
+  }
+
+  function show(msg, ok=true) {
+    out.className = "msg " + (ok ? "ok" : "err");
+    out.textContent = msg;
+  }
+
+  if (!token) {
+    btn.disabled = true;
+    show("Brak lub nieprawidłowy link (token).", false);
+  }
+
+  first.addEventListener("input", validate);
+  last.addEventListener("input", validate);
+  validate();
+
+  btn.addEventListener("click", async () => {
+    btn.disabled = true;
+    show("Zapisywanie...");
+
+    try {
+      const res = await fetch(FUNCTION_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token,
+          first_name: norm(first.value),
+          last_name: norm(last.value),
+        })
+      });
+
+      const text = await res.text();
+      if (res.ok) {
+        show("Dziękujemy! Potwierdzenie zapisane ✅", true);
+      } else {
+        // np. 409: już potwierdzone / zły token
+        let msg = "Nie udało się zapisać. Spróbuj ponownie.";
+        try {
+          const j = JSON.parse(text);
+          if (j && j.message) msg = j.message;
+        } catch {}
+        show(msg, false);
+        validate(); // pozwól kliknąć jeszcze raz jeśli pola są OK
+      }
+    } catch (e) {
+      show("Błąd połączenia. Spróbuj ponownie za chwilę.", false);
+      validate();
+    }
+  });
+</script>
 </body>
 </html>
