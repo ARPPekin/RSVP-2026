@@ -88,8 +88,8 @@
     const valid =
       token &&
       token.length >= 20 &&
-      normalize(firstInput.value).length >= 2 &&
-      normalize(lastInput.value).length >= 2;
+      normalize(firstInput.value).length >= 1 &&
+      normalize(lastInput.value).length >= 1;
 
     btn.disabled = !valid;
   }
