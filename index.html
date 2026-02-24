@@ -72,7 +72,7 @@
 <div class="small">Samo otwarcie linku nie potwierdza obecności.</div>
 
 <script>
-  const FUNCTION_URL = "https://PROJECT.functions.supabase.co/rsvp_confirm"; // <-- PODMIEŃ
+  const FUNCTION_URL = "https://dlapzkudardtyffzfksq.supabase.co/functions/v1/quick-handler"; // <-- PODMIEŃ
   const token = new URLSearchParams(window.location.search).get("t");
 
   const firstInput = document.getElementById("firstName");
@@ -113,7 +113,7 @@
     showMessage("Zapisywanie...");
 
     try {
-      const response = await fetch(https://dlapzkudardtyffzfksq.supabase.co/functions/v1/quick-handler, {
+      const response = await fetch(FUNCTION_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
