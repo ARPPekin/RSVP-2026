@@ -2,101 +2,149 @@
 <html lang="pl">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>RSVP</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Potwierdzenie obecności</title>
+
   <style>
-    body { font-family: system-ui, Arial, sans-serif; max-width: 520px; margin: 40px auto; padding: 0 16px; }
-    label { display:block; margin-top: 14px; font-weight: 600; }
-    input { width: 100%; padding: 12px; font-size: 16px; margin-top: 6px; box-sizing: border-box; }
-    button { width:100%; padding: 14px; font-size: 18px; margin-top: 18px; cursor: pointer; }
-    button:disabled { opacity: .5; cursor: not-allowed; }
-    .msg { margin-top: 16px; padding: 12px; border-radius: 8px; }
-    .ok { background:#e9f8ee; }
-    .err { background:#fdecec; }
-    .muted { color:#666; font-size: 13px; margin-top: 8px; }
+    body {
+      font-family: system-ui, -apple-system, Arial;
+      max-width: 480px;
+      margin: 60px auto;
+      padding: 0 20px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .message {
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 6px;
+    }
+
+    .success {
+      background: #e6f7ea;
+    }
+
+    .error {
+      background: #fdeaea;
+    }
+
+    .small {
+      margin-top: 12px;
+      font-size: 13px;
+      color: #666;
+    }
   </style>
 </head>
 <body>
-  <h1>Potwierdzenie obecności</h1>
 
-  <div id="content">
-    <p>Wpisz imię i nazwisko, aby aktywować przycisk potwierdzenia.</p>
+<h1>Potwierdź swoją obecność</h1>
 
-    <label for="first">Imię</label>
-    <input id="first" autocomplete="given-name" />
+<input id="firstName" placeholder="Imię" autocomplete="given-name" />
+<input id="lastName" placeholder="Nazwisko" autocomplete="family-name" />
 
-    <label for="last">Nazwisko</label>
-    <input id="last" autocomplete="family-name" />
+<button id="confirmBtn" disabled>Potwierdzam obecność</button>
 
-    <button id="btn" disabled>Potwierdzam obecność</button>
-
-    <div id="out"></div>
-    <div class="muted">Uwaga: samo otwarcie linku niczego nie potwierdza.</div>
-  </div>
+<div id="result"></div>
+<div class="small">Samo otwarcie linku nie potwierdza obecności.</div>
 
 <script>
-  const FUNCTION_URL = "https://PROJECT.functions.supabase.co/rsvp_confirm"; // <- PODMIEŃ
-  const token = new URLSearchParams(location.search).get("t");
+  const FUNCTION_URL = "https://PROJECT.functions.supabase.co/rsvp_confirm"; // <-- PODMIEŃ
+  const token = new URLSearchParams(window.location.search).get("t");
 
-  const first = document.getElementById("first");
-  const last  = document.getElementById("last");
-  const btn   = document.getElementById("btn");
-  const out   = document.getElementById("out");
+  const firstInput = document.getElementById("firstName");
+  const lastInput = document.getElementById("lastName");
+  const btn = document.getElementById("confirmBtn");
+  const result = document.getElementById("result");
 
-  function norm(s){ return (s || "").trim().replace(/\s+/g, " "); }
-
-  function validate() {
-    const ok = token && token.length >= 20 && norm(first.value).length >= 2 && norm(last.value).length >= 2;
-    btn.disabled = !ok;
+  function normalize(str) {
+    return (str || "").trim().replace(/\s+/g, " ");
   }
 
-  function show(msg, ok=true) {
-    out.className = "msg " + (ok ? "ok" : "err");
-    out.textContent = msg;
+  function validate() {
+    const valid =
+      token &&
+      token.length >= 20 &&
+      normalize(firstInput.value).length >= 2 &&
+      normalize(lastInput.value).length >= 2;
+
+    btn.disabled = !valid;
+  }
+
+  function showMessage(text, success = true) {
+    result.className = "message " + (success ? "success" : "error");
+    result.innerText = text;
   }
 
   if (!token) {
+    showMessage("Nieprawidłowy link.", false);
     btn.disabled = true;
-    show("Brak lub nieprawidłowy link (token).", false);
   }
 
-  first.addEventListener("input", validate);
-  last.addEventListener("input", validate);
+  firstInput.addEventListener("input", validate);
+  lastInput.addEventListener("input", validate);
   validate();
 
   btn.addEventListener("click", async () => {
     btn.disabled = true;
-    show("Zapisywanie...");
+    showMessage("Zapisywanie...");
 
     try {
-      const res = await fetch(FUNCTION_URL, {
+      const response = await fetch(https://dlapzkudardtyffzfksq.supabase.co/functions/v1/quick-handler, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({
-          token,
-          first_name: norm(first.value),
-          last_name: norm(last.value),
+          token: token,
+          first_name: normalize(firstInput.value),
+          last_name: normalize(lastInput.value)
         })
       });
 
-      const text = await res.text();
-      if (res.ok) {
-        show("Dziękujemy! Potwierdzenie zapisane ✅", true);
+      const text = await response.text();
+
+      if (response.ok) {
+        showMessage("Dziękujemy! Twoje potwierdzenie zostało zapisane ✅", true);
       } else {
-        // np. 409: już potwierdzone / zły token
-        let msg = "Nie udało się zapisać. Spróbuj ponownie.";
         try {
-          const j = JSON.parse(text);
-          if (j && j.message) msg = j.message;
-        } catch {}
-        show(msg, false);
-        validate(); // pozwól kliknąć jeszcze raz jeśli pola są OK
+          const data = JSON.parse(text);
+          showMessage(data.message || "Wystąpił błąd.", false);
+        } catch {
+          showMessage("Nie udało się zapisać odpowiedzi.", false);
+        }
+        validate();
       }
-    } catch (e) {
-      show("Błąd połączenia. Spróbuj ponownie za chwilę.", false);
+
+    } catch (error) {
+      showMessage("Błąd połączenia. Spróbuj ponownie.", false);
       validate();
     }
   });
 </script>
+
 </body>
 </html>
