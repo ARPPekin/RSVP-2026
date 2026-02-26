@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Potwierdzenie obecności</title>
+  <title>PLinChina RSVP</title>
 
   <style>
     body {
@@ -14,8 +14,13 @@
       text-align: center;
     }
 
-    h1 {
-      margin-bottom: 30px;
+    h1 { margin-bottom: 18px; }
+
+    .hint {
+      margin: 0 0 18px 0;
+      color: #444;
+      font-size: 14px;
+      line-height: 1.35;
     }
 
     input {
@@ -42,26 +47,47 @@
       margin-top: 20px;
       padding: 12px;
       border-radius: 6px;
+      word-break: break-word;
+      white-space: pre-wrap;
+      text-align: left;
     }
 
-    .success {
-      background: #e6f7ea;
-    }
-
-    .error {
-      background: #fdeaea;
-    }
+    .success { background: #e6f7ea; }
+    .error { background: #fdeaea; }
 
     .small {
       margin-top: 12px;
       font-size: 13px;
       color: #666;
     }
+
+    .lang {
+      margin-top: 18px;
+      font-size: 13px;
+      color: #666;
+      user-select: none;
+    }
+
+    .lang a {
+      color: inherit;
+      text-decoration: none;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      margin: 0 4px;
+      display: inline-block;
+    }
+
+    .lang a.active {
+      border-color: #999;
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
 
-<h1>Potwierdź swoją obecność</h1>
+<h1 id="t_title">Potwierdź swoją obecność</h1>
+<p id="t_hint" class="hint">Wpisz imię i nazwisko, aby aktywować przycisk.</p>
 
 <input id="firstName" placeholder="Imię" autocomplete="given-name" />
 <input id="lastName" placeholder="Nazwisko" autocomplete="family-name" />
@@ -69,10 +95,119 @@
 <button id="confirmBtn" disabled>Potwierdzam obecność</button>
 
 <div id="result"></div>
-<div class="small">Samo otwarcie linku nie potwierdza obecności.</div>
+<div id="t_note" class="small">Samo otwarcie linku nie potwierdza obecności.</div>
+
+<div class="lang" id="langSwitch">
+  <span id="t_lang">Język:</span>
+  <a href="#" data-lang="pl">PL</a>
+  <a href="#" data-lang="en">EN</a>
+  <a href="#" data-lang="zh">中文</a>
+</div>
 
 <script>
-  const FUNCTION_URL = "https://dlapzkudardtyffzfksq.supabase.co/functions/v1/quick-handler"; // <-- PODMIEŃ
+  const FUNCTION_URL = "https://dlapzkudardtyffzfksq.supabase.co/functions/v1/quick-handler";
+
+  // --- i18n ---
+  const i18n = {
+    pl: {
+      title: "Potwierdź swoją obecność",
+      hint: "Wpisz imię i nazwisko, aby aktywować przycisk.",
+      first_ph: "Imię",
+      last_ph: "Nazwisko",
+      btn: "Potwierdzam obecność",
+      saving: "Zapisywanie...",
+      ok: "Dziękujemy! Twoje potwierdzenie zostało zapisane ✅",
+      badlink: "Nieprawidłowy link.",
+      neterr: "Błąd połączenia. Spróbuj ponownie.",
+      fail: "Nie udało się zapisać odpowiedzi.",
+      conflict: "Nieprawidłowy link lub już potwierdzono.",
+      note: "Samo otwarcie linku nie potwierdza obecności.",
+      lang: "Język:"
+    },
+    en: {
+      title: "Confirm your attendance",
+      hint: "Enter your first and last name to enable the button.",
+      first_ph: "First name",
+      last_ph: "Last name",
+      btn: "I confirm attendance",
+      saving: "Saving...",
+      ok: "Thank you! Your response was saved ✅",
+      badlink: "Invalid link.",
+      neterr: "Network error. Please try again.",
+      fail: "Could not save your response.",
+      conflict: "Invalid link or already confirmed.",
+      note: "Opening the link does not confirm attendance.",
+      lang: "Language:"
+    },
+    zh: {
+      title: "确认出席",
+      hint: "请输入姓名后按钮才会激活。",
+      first_ph: "名",
+      last_ph: "姓",
+      btn: "确认出席",
+      saving: "正在保存…",
+      ok: "谢谢！已记录 ✅",
+      badlink: "链接无效。",
+      neterr: "网络错误，请重试。",
+      fail: "保存失败。",
+      conflict: "链接无效或已确认。",
+      note: "仅打开链接不会确认出席。",
+      lang: "语言："
+    }
+  };
+
+  function pickLang() {
+    const params = new URLSearchParams(window.location.search);
+    const urlLang = (params.get("lang") || "").toLowerCase();
+    if (urlLang && i18n[urlLang]) return urlLang;
+
+    const nav = (navigator.language || "en").toLowerCase();
+    if (nav.startsWith("pl")) return "pl";
+    if (nav.startsWith("zh")) return "zh";
+    return "en";
+  }
+
+  let lang = pickLang();
+  let dict = i18n[lang];
+
+  function applyI18n() {
+    dict = i18n[lang];
+
+    document.getElementById("t_title").innerText = dict.title;
+    document.getElementById("t_hint").innerText = dict.hint;
+    document.getElementById("t_note").innerText = dict.note;
+    document.getElementById("t_lang").innerText = dict.lang;
+
+    document.getElementById("firstName").placeholder = dict.first_ph;
+    document.getElementById("lastName").placeholder = dict.last_ph;
+    document.getElementById("confirmBtn").innerText = dict.btn;
+
+    document.querySelectorAll("#langSwitch a[data-lang]").forEach(a => {
+      a.classList.toggle("active", a.dataset.lang === lang);
+    });
+  }
+
+  function setLang(newLang) {
+    if (!i18n[newLang]) return;
+    lang = newLang;
+    applyI18n();
+
+    // zachowaj token i dopisz lang do URL bez przeładowania
+    const u = new URL(window.location.href);
+    u.searchParams.set("lang", lang);
+    history.replaceState(null, "", u.toString());
+  }
+
+  document.querySelectorAll("#langSwitch a[data-lang]").forEach(a => {
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      setLang(a.dataset.lang);
+    });
+  });
+
+  applyI18n();
+
+  // --- RSVP logic ---
   const token = new URLSearchParams(window.location.search).get("t");
 
   const firstInput = document.getElementById("firstName");
@@ -100,7 +235,7 @@
   }
 
   if (!token) {
-    showMessage("Nieprawidłowy link.", false);
+    showMessage(dict.badlink, false);
     btn.disabled = true;
   }
 
@@ -110,36 +245,40 @@
 
   btn.addEventListener("click", async () => {
     btn.disabled = true;
-    showMessage("Zapisywanie...");
+    showMessage(dict.saving, true);
 
     try {
-        const response = await fetch(FUNCTION_URL, {
+      const response = await fetch(FUNCTION_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            token: token,
-            first_name: normalize(firstInput.value),
-            last_name: normalize(lastInput.value)
+          token: token,
+          first_name: normalize(firstInput.value),
+          last_name: normalize(lastInput.value)
         })
-        });
+      });
 
-        const raw = await response.text();
-        showMessage(`HTTP ${response.status}: ${raw}`, response.ok);
+      const raw = await response.text();
 
       if (response.ok) {
-        showMessage("Dziękujemy! Twoje potwierdzenie zostało zapisane ✅", true);
-      } else {
-        try {
-          const data = JSON.parse(text);
-          showMessage(data.message || "Wystąpił błąd.", false);
-        } catch {
-          showMessage("Nie udało się zapisać odpowiedzi.", false);
-        }
-        validate();
+        showMessage(dict.ok, true);
+        return;
       }
 
+      // spróbuj wyciągnąć message z JSON
+      let msg = dict.fail;
+      try {
+        const data = JSON.parse(raw);
+        if (data && data.message) msg = data.message;
+      } catch { /* ignore */ }
+
+      // Jeśli 409 - pokaż ładny komunikat lokalny (a nie surowy)
+      if (response.status === 409) msg = dict.conflict;
+
+      showMessage(msg, false);
+      validate();
     } catch (error) {
-      showMessage("Błąd połączenia. Spróbuj ponownie.", false);
+      showMessage(dict.neterr, false);
       validate();
     }
   });
