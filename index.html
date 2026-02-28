@@ -74,7 +74,7 @@
     }
 
     .logo img {
-      max-width: 180px;
+      max-width: 120px;
       width: 55%;
       height: auto;
       display: block;
@@ -189,6 +189,7 @@
     <div class="card">
       <div class="logo">
         <img src="logo.png" alt="Logo" />
+        <hr>
       </div>
       <div class="lang" id="langSwitch">
         <span id="t_lang">Język:</span>
@@ -196,7 +197,8 @@
         <a href="#" data-lang="en">EN</a>
         <a href="#" data-lang="zh">中文</a>
       </div>
-      <h1 id="t_title">Potwierdź swoją obecność</h1>
+      <bg></bg>
+      <center></center><h1 id="t_title">Potwierdź swoją obecność</h1></center>
       <p id="t_hint" class="hint">Wpisz imię i nazwisko, aby aktywować przycisk.</p>
 
       <input id="firstName" placeholder="Imię" autocomplete="given-name" />
@@ -232,7 +234,7 @@
     },
     en: {
       title: "Confirm your attendance",
-      hint: "Important! Every guest must present an original, physical ID document before entering the event. Complete this form with the data found on your ID. We only accept: Passport, Diplomatic ID, ID (issued by the authorities of the People's Republic of China). Copies, scans, and photos on smartphones will not be accepted.",
+      hint: "<strong>Important!</strong> Every guest must present an original, physical ID document before entering the event. Complete this form with the data found on your ID.<br><br><b>We only accept:</b><br>- Passport,<br>- Diplomatic ID,<br>- ID (issued by the authorities of the People's Republic of China).<br><br><strong>Copies, scans, and photos on smartphones will not be accepted.</strong>",
       first_ph: "First Name (exactly as on ID)",
       last_ph: "Last Name (exactly as on ID)",
       btn: "I confirm my attendance",
@@ -247,7 +249,7 @@
     },
     zh: {
       title: "确认参加",
-      hint: "重要提示！每位宾客在进入派对前必须出示原始实体身份证件。请根据您身份证件上的信息填写此表。我们仅接受：护照、外交官证、身份证（由中华人民共和国政府签发）。不接受复印件、扫描件及手机照片。",
+      hint: "<strong>重要提示！</strong> 每位宾客在进入活动前必须出示原始的实体身份证件。请根据您身份证件上的信息填写此表。<br><br><b>我们仅接受：</b><br>- 护照，<br>- 外交官证，<br>- 身份证（由中华人民共和国政府签发）。<br><br><strong>不接受复印件、扫描件及手机照片。</strong>",
       first_ph: "名字（须与证件一致）",
       last_ph: "姓氏（须与证件一致）",
       btn: "确认参加",
