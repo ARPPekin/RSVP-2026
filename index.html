@@ -188,7 +188,12 @@
       <div class="logo">
         <img src="logo.png" alt="Logo" />
       </div>
-
+      <div class="lang" id="langSwitch">
+        <span id="t_lang">Język:</span>
+        <a href="#" data-lang="pl">PL</a>
+        <a href="#" data-lang="en">EN</a>
+        <a href="#" data-lang="zh">中文</a>
+      </div>
       <h1 id="t_title">Potwierdź swoją obecność</h1>
       <p id="t_hint" class="hint">Wpisz imię i nazwisko, aby aktywować przycisk.</p>
 
@@ -200,12 +205,6 @@
       <div id="result"></div>
       <div id="t_note" class="small">Samo otwarcie linku nie potwierdza obecności.</div>
 
-      <div class="lang" id="langSwitch">
-        <span id="t_lang">Język:</span>
-        <a href="#" data-lang="pl">PL</a>
-        <a href="#" data-lang="en">EN</a>
-        <a href="#" data-lang="zh">中文</a>
-      </div>
     </div>
   </div>
 
@@ -215,13 +214,13 @@
   // --- i18n ---
   const i18n = {
     pl: {
-      title: "Potwierdź swoją obecność",
-      hint: "Wpisz imię i nazwisko, aby aktywować przycisk.",
-      first_ph: "Imię",
-      last_ph: "Nazwisko",
-      btn: "Potwierdzam obecność",
+      title: "Potwierdź chęć wzięcia udziału",
+      hint: "<strong>Ważne!</strong> Każdy gość przed wejściem na wydarzenie musi okazać oryginalny, fizyczny dokument tożsamości. Uzupełnij ten formularz danymi, które znajdują się w Twoim ID. <br><br><b>Akceptujemy tylko:</b><br> - Paszport, <br>- ID dyplomatyczne, <br>- ID (wydane przez władze Chińskiej Republiki Ludowej).<br><br><strong> Nie będą akceptowane: kopie, skany i zdjęcia w smartfonach.</strong>",
+      first_ph: "Imię (dokładnie jak na ID)",
+      last_ph: "Nazwisko (dokładnie jak na ID)",
+      btn: "Potwierdzam chęć wzięcia udziału",
       saving: "Zapisywanie...",
-      ok: "Dziękujemy! Twoje potwierdzenie zostało zapisane ✅",
+      ok: "Potwierdzone ✅ Zapraszamy 29 kwietnia!",
       badlink: "Nieprawidłowy link.",
       neterr: "Błąd połączenia. Spróbuj ponownie.",
       fail: "Nie udało się zapisać odpowiedzi.",
@@ -231,32 +230,32 @@
     },
     en: {
       title: "Confirm your attendance",
-      hint: "Enter your first and last name to enable the button.",
-      first_ph: "First name",
-      last_ph: "Last name",
-      btn: "I confirm attendance",
+      hint: "Important! Every guest must present an original, physical ID document before entering the event. Complete this form with the data found on your ID. We only accept: Passport, Diplomatic ID, ID (issued by the authorities of the People's Republic of China). Copies, scans, and photos on smartphones will not be accepted.",
+      first_ph: "First Name (exactly as on ID)",
+      last_ph: "Last Name (exactly as on ID)",
+      btn: "I confirm my attendance",
       saving: "Saving...",
-      ok: "Thank you! Your response was saved ✅",
+      ok: "Confirmed ✅ See you on April 29th!",
       badlink: "Invalid link.",
-      neterr: "Network error. Please try again.",
-      fail: "Could not save your response.",
+      neterr: "Connection error. Please try again.",
+      fail: "Failed to save response.",
       conflict: "Invalid link or already confirmed.",
-      note: "Opening the link does not confirm attendance.",
+      note: "Opening the link does not confirm attendance. ",
       lang: "Language:"
     },
     zh: {
-      title: "确认出席",
-      hint: "请输入姓名后按钮才会激活。",
-      first_ph: "名",
-      last_ph: "姓",
-      btn: "确认出席",
-      saving: "正在保存…",
-      ok: "谢谢！已记录 ✅",
+      title: "确认参加",
+      hint: "重要提示！每位宾客在进入派对前必须出示原始实体身份证件。请根据您身份证件上的信息填写此表。我们仅接受：护照、外交官证、身份证（由中华人民共和国政府签发）。不接受复印件、扫描件及手机照片。",
+      first_ph: "名字（须与证件一致）",
+      last_ph: "姓氏（须与证件一致）",
+      btn: "确认参加",
+      saving: "正在保存...",
+      ok: "确认成功 ✅ 4月29日见！",
       badlink: "链接无效。",
-      neterr: "网络错误，请重试。",
-      fail: "保存失败。",
+      neterr: "连接错误。请重试。",
+      fail: "无法保存回复。",
       conflict: "链接无效或已确认。",
-      note: "仅打开链接不会确认出席。",
+      note: "仅打开链接并不代表确认参加。",
       lang: "语言："
     }
   };
