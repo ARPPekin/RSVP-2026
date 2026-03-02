@@ -202,7 +202,9 @@
       <p id="t_hint" class="hint">Wpisz imię i nazwisko, aby aktywować przycisk.</p>
 
       <input id="firstName" placeholder="Imię" autocomplete="given-name" />
-      <input id="lastName" placeholder="Nazwisko" autocomplete="family-name" />
+      <div id="lastNameWrapper">
+        <input id="lastName" placeholder="Nazwisko" autocomplete="family-name" />
+      </div>
 
       <button id="confirmBtn" disabled>Potwierdzam obecność</button>
 
@@ -280,16 +282,27 @@
 
   function applyI18n() {
     dict = i18n[lang];
-
+  
     document.getElementById("t_title").innerText = dict.title;
-    document.getElementById("t_hint").innerHTML = dict.hint;
+    document.getElementById("t_hint").innerText = dict.hint;
     document.getElementById("t_note").innerText = dict.note;
     document.getElementById("t_lang").innerText = dict.lang;
-
+  
     document.getElementById("firstName").placeholder = dict.first_ph;
-    document.getElementById("lastName").placeholder = dict.last_ph;
     document.getElementById("confirmBtn").innerText = dict.btn;
-
+  
+    const lastWrapper = document.getElementById("lastNameWrapper");
+    const lastInput = document.getElementById("lastName");
+  
+    if (lang === "zh") {
+      lastWrapper.style.display = "none";
+      lastInput.value = "NONE";   // albo "ND"
+    } else {
+      lastWrapper.style.display = "block";
+      lastInput.placeholder = dict.last_ph;
+      lastInput.value = "";
+    }
+  
     document.querySelectorAll("#langSwitch a[data-lang]").forEach(a => {
       a.classList.toggle("active", a.dataset.lang === lang);
     });
@@ -330,7 +343,7 @@
       token &&
       token.length >= 20 &&
       normalize(firstInput.value).length >= 1 &&
-      normalize(lastInput.value).length >= 1;
+      (lang === "zh" || normalize(lastInput.value).length >= 1);
 
     btn.disabled = !valid;
   }
@@ -360,7 +373,7 @@
         body: JSON.stringify({
           token: token,
           first_name: normalize(firstInput.value),
-          last_name: normalize(lastInput.value)
+          last_name: lang === "zh" ? "NONE" : normalize(lastInput.value)
         })
       });
 
